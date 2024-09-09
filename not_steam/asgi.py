@@ -1,5 +1,5 @@
 """
-ASGI config for brian_game_store project.
+ASGI config for not_steam project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'brian_game_store.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'not_steam.settings')
 
 application = get_asgi_application()
