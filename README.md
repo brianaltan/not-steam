@@ -146,7 +146,7 @@ Proyek ini dikembangkan menggunakan Django sebagai bagian dari tugas Mata Kuliah
 
 ### Bagan Django's Architecture Pattern
 
-![Bagan Django's Architecture](github_assets/tugas1_arsitektur.png)
+![Bagan Django's Architecture](github_assets/tugas2_arsitektur.png)
 ### Jawaban Tugas 2
 
 
