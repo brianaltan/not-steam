@@ -453,3 +453,15 @@ Jika ``csrf_token`` tidak ditambahkan pada form Django, aplikasi akan sangat ren
     ![XML by ID Postman](github_assets/tugas3_xml_id.png)
 4. **Data dalam bentuk JSON berdasarkan ID**
     ![JSON by ID Postman](github_assets/tugas3_json_id.png)
+
+
+## Tugas 4
+### Jawaban Tugas 4
+#### 1. Apa perbedaan antara ``HttpResponseRedirect()`` dan ``redirect()``
+#### 2. Jelaskan cara kerja penghubungan model ``Product`` dengan ``User!``
+#### 3. Apa perbedaan antara authentication dan authorization, apakah yang dilakukan saat pengguna login? Jelaskan bagaimana Django mengimplementasikan kedua konsep tersebut.
+#### 4. Bagaimana Django mengingat pengguna yang telah login? Jelaskan kegunaan lain dari cookies dan apakah semua cookies aman digunakan?
+#### 5. Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step.
+
+
+
