@@ -4,6 +4,11 @@ Not Steam adalah sebuah website e-commerce yang berfungsi sebagai platform untuk
 
 Proyek ini dikembangkan menggunakan Django sebagai bagian dari tugas Mata Kuliah Pemrograman Berbasis Platform oleh Brian Altan (2306152166).
 
+## Quick-Navigation
+- [Tugas 2](#tugas-2)
+- [Tugas 3](#tugas-3)
+- [Tugas 4](#tugas-4)
+
 ## Tugas 2
 ### Proses Setup "Not Steam" dengan Django
 1. **Membuat Repository GitHub Baru**
