@@ -1,7 +1,8 @@
-from django.shortcuts import render, redirect
+from django.urls import reverse
+from django.shortcuts import render, redirect, reverse 
 from main.forms import ProductEntryForm
 from main.models import ProductEntry
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.core import serializers
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
@@ -11,7 +12,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 import datetime
 from django.http import HttpResponseRedirect
-from django.urls import reverse
+
 
 @login_required(login_url='/login')
 def show_main(request):
@@ -86,3 +87,19 @@ def logout_user(request):
     response = HttpResponseRedirect(reverse('main:login'))
     response.delete_cookie('last_login')
     return response
+
+def edit_product(request, id):
+    mood = ProductEntry.objects.get(pk = id)
+    form = ProductEntryForm(request.POST or None, instance=mood)
+
+    if form.is_valid() and request.method == "POST":
+        form.save()
+        return HttpResponseRedirect(reverse('main:show_main'))
+
+    context = {'form': form}
+    return render(request, "edit_product.html", context)
+
+def delete_product(request, id):
+    mood = ProductEntry.objects.get(pk = id)
+    mood.delete()
+    return HttpResponseRedirect(reverse('main:show_main'))

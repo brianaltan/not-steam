@@ -8,6 +8,7 @@ Proyek ini dikembangkan menggunakan Django sebagai bagian dari tugas Mata Kuliah
 - [Tugas 2](#tugas-2)
 - [Tugas 3](#tugas-3)
 - [Tugas 4](#tugas-4)
+- [Tugas 5](#tugas-5)
 
 ## Tugas 2
 ### Proses Setup "Not Steam" dengan Django
@@ -760,7 +761,197 @@ Tentunya tidak semua cookies aman untuk digunakan. Sebagai contoh, karena sessio
         git push -u origin main
         ```
 
+## Tugas 5
+### Jawaban Tugas 5
+#### 1. Jika terdapat beberapa CSS selector untuk suatu elemen HTML, jelaskan urutan prioritas pengambilan CSS selector tersebut!
+CSS memiliki sistem prioritas untuk menentukan pengambilan prioritas. Selector CSS dengan prioritas lebih tinggi akan memiliki wewenang yang lebih tinggi, sementara selector dengan prioritas lebih rendah tidak dapat mengubah atau mempengaruhi gaya yang ditentukan oleh selector dengan prioritas lebih tinggi.
 
+Prioritas Selector CSS sebagai berikut (descending):
+1. Inline CSS
+2. ID Selector
+3. Pseudo-class Selector
+4. Pseudo element Selector
+5. Universal Selector
 
+#### 2. Mengapa responsive design menjadi konsep yang penting dalam pengembangan aplikasi web? Berikan contoh aplikasi yang sudah dan belum menerapkan responsive design!
+Memiliki website yang responsif merupakan hal yang penting dalam pengembangan aplikasi web. Salah satu alasan pentingnya responsivitas adalah keberagaman resolusi layar perangkat pengguna. Jika website tidak memiliki desain responsif, pengguna mungkin tidak dapat menampilkan website dengan baik di layar mereka dan mengakibatkan pengguna akan enggan menggunakan aplikasi tersebut.
 
+Salah satu contoh website yang sudah menerapkan desain responsif adalah halaman utama Discord. Sebaliknya, website tutorial PBP saya pada week 0 belum menerapkan desain responsif :)
+#### 3. Jelaskan perbedaan antara margin, border, dan padding, serta cara untuk mengimplementasikan ketiga hal tersebut!
+![CSS Box](github_assets/tugas5_cssbox.png)
 
+**Margin** adalah ruang kosong di luar batas border elemen. Sering kali, margin digunakan untuk membuat jarak antara elemen satu dengan elemen lainnya. 
+
+Margin dapat diatur secara individu dengan menggunakan: `margin-top`, `margin-right`, `margin-bottom`, `margin-left`.
+
+Contoh Penggunaan:
+```css
+.testing{
+    margin-top: 5px;
+    margin-right: 10px;
+    margin-bottom: 5px;
+    margin-left: 10px;
+}
+```
+
+**Border** adalah garis yang mengelilingi padding dan konten dari elemen. Sering kali digunakan untuk batas visual antar elemen.
+
+Border dapat diatur secara individu dengan menggunakan: ``border-top``, ``border-right``, ``border-bottom``, ``border-left``.
+
+```css
+.testing{
+    border-top: 2px;
+    border-right: 3px;
+    border-bottom: 2px;
+    border-left: 3px;
+}
+```
+
+**Padding** adalah ruang kosong yang memberikan jarak antara konten seperti teks dan gambar.
+
+Padding dapat diatur secara individu dengan menggunakan: ``padding-top``, ``padding-right``, ``padding-bottom``, ``padding-left``.
+
+```css
+.testing{
+    padding-top: 10px;
+    padding-right: 5px;
+    padding-bottom: 10px;
+    padding-left: 5px;
+}
+```
+#### 4. Jelaskan konsep flex box dan grid layout beserta kegunaannya!
+**Flex Box** adalah modul CSS yang memudahkan pengembang aplikasi untuk mengatur jarak antar elemen tanpa perlu mengetahui ukuran-ukuran elemennya. Flex Box juga bekerja secara satu dimensi, sehingga hanya dapat berfungsi secara horizontal dan vertikal. Kegunaan Flex Box dapat menyederhanakan pembuatan layout satu dimensi.
+
+Sementara itu, **Grid Layout** adalah modul CSS yang dapat mengatur tata letak model dan bekerja secara dua dimensi, sehingga dapat menggunakan fitur ``grid`` untuk mengonfigurasi tata letak yang lebih kompleks secara lebih terstruktur. Kegunaan Grid Layout dapat menyederhanakan pembuatan layout dua dimensi.
+#### 5. Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step.
+1. **Menambahkan Fitur Edit dan Delete Product pada Aplikasi**
+    - Pada berkas ``views.py`` pada subdirektori ``main``, tambahkan fungsi ``edit_product``,``delete_product`` dan impor ``reverse``. 
+    ```python
+    ...
+    from django.shortcuts import .., reverse
+    ...
+    def edit_product(request, id):
+    mood = ProductEntry.objects.get(pk = id)
+    form = ProductEntryForm(request.POST or None, instance=mood)
+
+    if form.is_valid() and request.method == "POST":
+        form.save()
+        return HttpResponseRedirect(reverse('main:show_main'))
+
+    context = {'form': form}
+    return render(request, "edit_product.html", context)
+
+    def delete_product(request, id):
+        mood = ProductEntry.objects.get(pk = id)
+        mood.delete()
+        return HttpResponseRedirect(reverse('main:show_main'))
+    ```
+    - Pada berkas ``urls.py`` pada direktori ``main``, impor fungsi ``edit_product``,``delete_product`` dan whitelist ``urlpatterns``.
+    ```python
+    ...
+    from main.views import edit_product, delete_product
+    ...
+    path('edit-product/<uuid:id>', edit_product, name='edit_product'),
+    path('delete/<uuid:id>', delete_product, name='delete_product'),    
+    ...
+    ```
+    - Buat berkas baru ``edit_product.html`` pada subdirektori ``main/templates``.
+    ```html
+    {% extends 'base.html' %}
+    {% load static %}
+    {% block meta %}
+    <title>Edit Product</title>
+    {% endblock meta %}
+
+    {% block content %}
+    {% include 'navbar.html' %}
+    <div class="flex flex-col min-h-screen bg-gray-100">
+    <div class="container mx-auto px-4 py-8 mt-16 max-w-xl">
+        <h1 class="text-3xl font-bold text-center mb-8 text-black">Edit Product Entry</h1>
+    
+        <div class="relative top-5 bg-blue-100 shadow-md rounded-lg mb-6 break-inside-avoid 
+                    flex flex-col border-2 border-indigo-300 
+                    transition-transform duration-300 p-6 form-style">
+        <form method="POST" class="space-y-6">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="flex flex-col">
+                    <label for="{{ field.id_for_label }}" class="mb-2 font-semibold text-gray-700">
+                        {{ field.label }}
+                    </label>
+                    <div class="w-full">
+                        {{ field }}
+                    </div>
+                    {% if field.help_text %}
+                        <p class="mt-1 text-sm text-gray-500">{{ field.help_text }}</p>
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+            <div class="flex justify-center mt-6">
+                <button type="submit" class="bg-indigo-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-indigo-700 transition duration-300 ease-in-out w-full">
+                    Edit Product Entry
+                </button>
+            </div>
+        </form>
+        </div>
+    </div>
+    </div>
+    {% endblock %}
+    ```
+    - Tambahkan button edit dan delete pada berkas ``main.html`` pada subdirektori ``main/templates``.
+    ```html
+    ...
+    <td>
+        <a href="{% url 'main:edit_product' product_entry.pk %}">
+            <button>
+                Edit
+            </button>
+        </a>
+    </td>
+    <td>
+        <a href="{% url 'main:delete_product' product_entry.pk %}">
+            <button>
+                Delete
+            </button>
+        </a>
+    </td>
+    ...
+    ```
+2. **Menambahkan Navigation Bar**
+    - Buat berkas ``navbar.html`` pada folder ``templates/`` di root directory.
+    - Tambahkan navbar yang dibuat ke dalam ``main.html``, ``create_product_entry.html`` dan ``edit_product.html`` yang berada pada subdirektori ``main/templates``.
+
+3. **Konfigurasi Static Files pada Aplikasi**
+    - Pada ``settings.py`` tambahkan Middleware Whitenoise.
+    ```python
+    MIDDLEWARE = [
+        'django.middleware.security.SecurityMiddleware',
+        'whitenoise.middleware.WhiteNoiseMiddleware', #Tambahkan tepat di bawah SecurityMiddleware
+        ...
+    ]
+    ```
+    - Pada ``settings.py`` modifikasi ``STATIC_ROOT``, ``STATICFILES_DIRS`` dan ``STATIC_URL``.
+    ```python
+    ...
+    STATIC_URL = '/static/'
+    if DEBUG:
+        STATICFILES_DIRS = [
+            BASE_DIR / 'static' # merujuk ke /static root project pada mode development
+        ]
+    else:
+        STATIC_ROOT = BASE_DIR / 'static' # merujuk ke /static root project pada mode production
+    ...
+    ```
+4. **Menambahkan Tailwind pada aplikasi**
+    - Menambahkan script CDN Tailwind ke ``templates/base.html`` pada direktori utama
+    - Menambahkan ``global.css`` ke ``static/css`` pada direktori utama
+    - Mengatur ulang tampilan agar tidak identik sama dengan desain tutorial
+    - Melakukan push commits ke Github Repository ``not-steam``:
+        ```bash
+        git add .
+        git commit -m "pesan"
+        git push -u origin main
+        ```
