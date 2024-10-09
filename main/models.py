@@ -12,4 +12,3 @@ class ProductEntry(models.Model):
     video_trailer = models.URLField()
     rating = models.FloatField()
     quantity = models.IntegerField()
-

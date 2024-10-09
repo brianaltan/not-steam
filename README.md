@@ -9,6 +9,7 @@ Proyek ini dikembangkan menggunakan Django sebagai bagian dari tugas Mata Kuliah
 - [Tugas 3](#tugas-3)
 - [Tugas 4](#tugas-4)
 - [Tugas 5](#tugas-5)
+- [Tugas 6](#tugas-6)
 
 ## Tugas 2
 ### Proses Setup "Not Steam" dengan Django
@@ -955,3 +956,91 @@ Sementara itu, **Grid Layout** adalah modul CSS yang dapat mengatur tata letak m
         git commit -m "pesan"
         git push -u origin main
         ```
+
+## Tugas 6
+### Jawaban Tugas 6
+#### 1. Jelaskan manfaat dari penggunaan JavaScript dalam pengembangan aplikasi web!
+JavaScript dapat membantu meningkatkan pengalaman pengguna saat berinteraksi dengan aplikasi web. Misalnya, JavaScript dapat digunakan untuk memvalidasi formulir secara real-time di sisi klien, serta menambahkan efek transisi dan pop-up.
+
+Selain itu, JavaScript memiliki tingkat implementasi yang relatif mudah dan sangat cocok untuk pengembangan frontend maupun backend. Sehingga, JavaScript merupakan alat yang sangat bermanfaat untuk memudahkan pekerjaan programmer.
+#### 2. Jelaskan fungsi dari penggunaan ``await`` ketika kita menggunakan ``fetch()``! Apa yang akan terjadi jika kita tidak menggunakan ``await``?
+Ketika kita menggunakan `await` dengan `fetch()`, `fetch()` akan mengembalikan sebuah Promise, dan kita akan menunggu hingga data berhasil diambil sebelum melanjutkan ke baris kode berikutnya.
+
+Jika kita tidak menggunakan `await`, tidak akan ada delay untuk menunggu respons dari pengambilan data dan kode akan langsung melanjutkan eksekusi ke baris berikutnya. Akibatnya, kita tidak dapat langsung mengakses data yang diambil.
+#### 3. Mengapa kita perlu menggunakan decorator ``csrf_exempt`` pada view yang akan digunakan untuk AJAX POST?
+Saat kita mengirimkan AJAX POST, klien mungkin tidak dapat menyertakan token CSRF dengan mudah. `csrf_exempt` berfungsi untuk menginstruksikan Django agar tidak memeriksa token CSRF saat melakukan request POST. Namun, karena penggunaan dekorator `csrf_exempt` dapat membuka celah keamanan, penggunaannya harus dibatasi dan hanya digunakan di tempat di mana validasi token CSRF tidak diperlukan.
+#### 4. Pada tutorial PBP minggu ini, pembersihan data input pengguna dilakukan di belakang (backend) juga. Mengapa hal tersebut tidak dilakukan di frontend saja?
+Hal ini dilakukan karena klien bisa saja melakukan sniffing pada request yang kita kirimkan ke aplikasi web dan mengirim request langsung ke backend, sehingga validasi pada form di frontend dapat diabaikan. Oleh karena itu, sanitasi input dilakukan di frontend dan juga di backend sebagai best practice.
+#### 5. Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step.
+- Menghapus berkas block conditional ``product_entries`` ke ``main/templates/main.html``
+- Menambahkan potongan kode di tempat yang sama ke ``main/templates/main.html``
+- Menambahkan script dengan fungsi ``getProductEntries`` ke ``main/templates/main.html``
+- Menambahkan script dengan fungsi ``refreshProductEntries`` ke ``main/templates/main.html`` agar dapat refresh data product secara asinkronus
+- Mengubah fungsi ``show_xml`` dan ``show_json`` untuk hanya menampilkan data milik pengguna yang sudah logged in.
+    ```python
+    ...
+    data = ProductEntry.objects.filter(user=request.user)
+    ...
+    ```
+- Menambahkan kerangka html Modal sebagai form untuk menambahkan Produc ke ``main/templates/main.html`` 
+- Menambahkan script untuk menampilkan dan menghilangkan visibility modal, secara default modal akan hidden dan akan dihide dan input form akan di clear ketika sukses dalam menambahkan product ke ``main/templates/main.html`` 
+- Tambahkan tombol Add New Product Entry by AJAX ke ``main/templates/main.html`` 
+- Tambahkan script Javascript dan event listener fungsi ``addProductEntry`` untuk menambahkan data berdasarkan input ke basis data secara AJAX ke ``main/templates/main.html`` 
+- Tambahkan fungsi ``add_product_entry_ajax`` ke ``main/views.py``
+    ```python
+    @csrf_exempt
+    @require_POST
+    def add_product_entry_ajax(request):
+        name = strip_tags(request.POST.get("name"))
+        price = strip_tags(request.POST.get("price"))
+        description = strip_tags(request.POST.get("description"))
+        video_trailer = strip_tags(request.POST.get("video_trailer"))
+        rating = strip_tags(request.POST.get("rating"))
+        quantity = strip_tags(request.POST.get("quantity"))
+
+        user = request.user
+        new_product = ProductEntry(
+            user=user,
+            name=name,
+            price=int(price),
+            description=description,
+            video_trailer=video_trailer,
+            rating=float(rating),
+            quantity=int(quantity)
+        )
+        new_product.save()
+
+        return HttpResponse(b"CREATED", status=201)
+    ```
+- Impor fungsi ``add_product_entry_ajax`` ke ``main/urls.py``
+    ```python
+    from main.views import ..., add_product_entry_ajax
+    ```
+- Whitelist path ``/create-ajax/`` untuk mengakses fungsi yang barusan diimpor
+    ```python
+    urlpatterns = [
+    ...
+    path('create-ajax', add_product_entry_ajax, name='add_product_entry_ajax'),
+    ]
+    ```
+- Impor fungsi ``strip_tags`` ke ``main/views.py`` dan ``main/forms.py``
+    ```python
+    from django.utils.html import strip_tags
+    ``` 
+- Tambahkan ``strip_tags`` untuk setiap input ke ``main/views.py`` dan ``main/forms.py``
+- Tambahkan potongan kode untuk membersihkan data dengan DOMPurify di frontend ke ``main/templates/main.html``
+    ```html
+    {% block meta %}
+    ...
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.7/dist/purify.min.js"></script>
+    ...
+    {% endblock meta %}
+    ```
+- Lakukan sanitisasi sebelum menampilkan data pada ``refreshProductEtnries`` ke ``main/templates/main.html``
+- Melakukan push commits ke Github Repository ``not-steam``:
+    ```bash
+    git add .
+    git commit -m "pesan"
+    git push -u origin main
+    ```
+
