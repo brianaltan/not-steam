@@ -132,3 +132,30 @@ def delete_product(request, id):
     mood = ProductEntry.objects.get(pk = id)
     mood.delete()
     return HttpResponseRedirect(reverse('main:show_main'))
+
+from django.views.decorators.csrf import csrf_exempt
+import json
+from django.http import JsonResponse
+
+@csrf_exempt
+def create_mood_flutter(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            new_product = ProductEntry.objects.create(
+                user=request.user,
+                name=data.get("name", ""),
+                price=int(data.get("price", 0)),
+                description=data.get("description", ""),
+                video_trailer=data.get("video_trailer", ""),
+                rating=float(data.get("rating", 0.0)),
+                quantity=int(data.get("quantity", 0))
+            )
+
+            new_product.save()
+
+            return JsonResponse({"status": "success"}, status=200)
+        except (ValueError, KeyError) as e:
+            return JsonResponse({"status": "error", "message": str(e)}, status=400)
+    else:
+        return JsonResponse({"status": "error"}, status=401)
